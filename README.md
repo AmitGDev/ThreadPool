@@ -1,8 +1,8 @@
 
 
-**ThreadPool v1.0.0**
+**ThreadPool v2.0.0**
 
-A **Cross-Platform** Flexible Thread Pool for **C++20** applications **(Header-Only Class)**
+A **Cross-Platform** Flexible Thread Pool for **C++23** applications **(Header-Only Class)**
 
 **Author:** Amit Gefen
 
@@ -12,7 +12,7 @@ A **Cross-Platform** Flexible Thread Pool for **C++20** applications **(Header-O
 
 **Overview**
 
-- Provides a high-level interface for thread pool in **C++20** applications.
+- Provides a high-level interface for thread pool in **C++23** applications.
 - Supports various Submit mechanisms, including lambdas, functors, plain function pointers, and member functions.
 - Implements graceful shutdown to ensure pool threads are completed before destruction.
 
@@ -20,7 +20,7 @@ A **Cross-Platform** Flexible Thread Pool for **C++20** applications **(Header-O
 
 **Features**
 
-- Flexible Submut Options:
+- Flexible Submit Options:
   - Submit tasks with lambdas, functors, plain function pointers, and member functions.
   - Pass optional arguments to the Submit for custom data.
 - Robust Error Handling:
@@ -66,4 +66,4 @@ int main()
 **Usage Example**
 
 See the **main.cpp** file for a comprehensive example demonstrating various scheduling scenarios. <br>
-Demo: https://onlinegdb.com/2biPyuygN
+Demo: https://onlinegdb.com/2vNUTwtEEI

@@ -1,10 +1,15 @@
-// main.cpp : This file contains the 'main' function. Program execution begins
-// and ends there.
+// main.cpp : Program execution begins and ends there.
 //
 
+#include <atomic>
 #include <chrono>
+#include <cstddef>
+#include <cstdint>
+#include <future>
 #include <iostream>
 #include <syncstream>
+#include <thread>
+#include <vector>
 
 #include "ThreadPool.h"
 
@@ -13,10 +18,8 @@ constexpr size_t kDefaultPoolSize = 4;
 constexpr size_t kDefaultThreadCount = 8;
 constexpr uint8_t kTwoDigits = 10;
 
-}  // namespace
-
-// Call: log() to reset origin.
-static void log(uint32_t index = 0, const char* action = nullptr) {
+// Call: Log() to reset origin.
+void Log(uint32_t index = 0, const char* action = nullptr) {
   static uint64_t origin{0};
 
   auto now = std::chrono::system_clock::now();
@@ -24,7 +27,7 @@ static void log(uint32_t index = 0, const char* action = nullptr) {
   auto seconds =
       std::chrono::duration_cast<std::chrono::seconds>(epoch).count();
 
-  if (action == nullptr) {
+  if (action == nullptr) {  // Reset origin
     origin = seconds;
 
     return;
@@ -38,7 +41,7 @@ static void log(uint32_t index = 0, const char* action = nullptr) {
 
 // **** Callable function: ****
 
-static void Test_CallableObject() {
+void TestCallableObject() {
   // Create a ThreadPool with 4 threads
   ThreadPool pool(kDefaultPoolSize);
 
@@ -49,9 +52,9 @@ static void Test_CallableObject() {
   for (uint32_t index = 1; index <= kDefaultThreadCount; ++index) {
     futures.emplace_back(pool.Submit([index] {
       // Simulate some task execution
-      log(index, "started");
+      Log(index, "started");
       std::this_thread::sleep_for(std::chrono::seconds(index));  // 1 - 8
-      log(index, "stopped");
+      Log(index, "stopped");
     }));
   }
 
@@ -63,13 +66,13 @@ static void Test_CallableObject() {
 
 // **** Function: ****
 
-static void Function(uint32_t index) {
-  log(index, "started");
+void Function(uint32_t index) {
+  Log(index, "started");
   std::this_thread::sleep_for(std::chrono::seconds(index));
-  log(index, "stopped");
+  Log(index, "stopped");
 }
 
-static void Test_Function() {
+void TestFunction() {
   ThreadPool pool(kDefaultPoolSize);
   std::vector<std::future<void>> futures;
 
@@ -101,43 +104,34 @@ class MyClass final {
 
  private:
   void MemberFunction(uint32_t index) {
-    log(index, "started");
+    Log(index, "started");
     ++counter_;
     std::this_thread::sleep_for(std::chrono::seconds(index));
-    log(index, "stopped");
+    Log(index, "stopped");
   }
 
   std::atomic_int_least64_t counter_{0};
 };
 
+}  // namespace
+
 // **** Main: ****
 
-// NOLINTNEXTLINE(bugprone-exception-escape)
-auto main() -> int {
-  try {
-    std::cout
-        << "**** note: each task runs for a number of seconds equal to its "
-           "id ****"
-        << '\n';
+auto main() -> int {  // NOLINT(bugprone-exception-escape)
+  std::cout << "**** note: each task runs for a number of seconds equal to its "
+               "id ****"
+            << '\n';
 
-    std::cout << "\n**** test callable object: ****" << '\n';
-    log();
-    Test_CallableObject();
+  std::cout << "\n**** test callable object: ****" << '\n';
+  Log();
+  TestCallableObject();
 
-    std::cout << "\n**** test function: ****" << '\n';
-    log();
-    Test_Function();
+  std::cout << "\n**** test function: ****" << '\n';
+  Log();
+  TestFunction();
 
-    std::cout << "\n**** test member-function: ****" << '\n';
-    log();
-    MyClass my_class;
-    my_class.Test();
-
-    return 0;
-  } catch (const std::exception& ex) {
-    std::cerr << "Caught standard exception in main: " << ex.what() << '\n';
-  } catch (...) {
-    std::cerr << "Caught unknown exception in main\n";
-  }
-  return 1;
+  std::cout << "\n**** test member-function: ****" << '\n';
+  Log();
+  MyClass my_class;
+  my_class.Test();
 }
