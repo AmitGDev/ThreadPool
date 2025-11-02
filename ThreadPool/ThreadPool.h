@@ -185,11 +185,7 @@ auto ThreadPool::Submit(Callable&& callable, Args&&... args) {
     tasks_.emplace([lambda_task = std::move(
                         packaged_task)]() {  // Ensure the `packaged_task` is
                                              // moved rather than copied.
-      try {
-        (*lambda_task)();
-      } catch (const std::exception& e) {
-        std::cerr << "caught exception: " << e.what() << '\n';
-      }
+      (*lambda_task)();  // Executes task; exceptions stored in future.
     });
   }
 
@@ -232,8 +228,8 @@ auto ThreadPool::Submit(MemberFunction&& member_function, Instance&& instance,
         // the `lambda_instance` (wrapped in a single-element tuple) with the
         // `lambda_args`.
         return std::apply(
-            lambda_member_function,
-            std::tuple_cat(std::make_tuple(lambda_instance), lambda_args));
+            std::move(lambda_member_function),
+            std::tuple_cat(std::make_tuple(std::move(lambda_instance)), std::move(lambda_args)));
       };
 
   // Delegate to the callable object Submit (overload (1))
