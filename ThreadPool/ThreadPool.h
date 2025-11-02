@@ -175,11 +175,6 @@ auto ThreadPool::Submit(Callable&& callable, Args&&... args) {
   {
     std::lock_guard lock(mutex_);
 
-    if (stop_) {
-      throw std::runtime_error(
-          "submit on stopped ThreadPool");  // Error if the pool is stopped
-    }
-
     // Wrap & Store:
     // * Wrap `std::packaged_task` in a lambda that matches the
     // `std::function<void()>` signature. The lambda fits this signature because
